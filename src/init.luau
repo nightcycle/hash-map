@@ -34,6 +34,9 @@ type HashMapImpl<K, V> = {
 
 type MutHashMapImpl<K, V> = {
 	__index: MutHashMapImpl<K, V>,
+	__tostring: (self: MutHashMap<K, V>) -> string,
+	__len: (self: MutHashMap<K, V>) -> number,
+	__iter: (self: MutHashMap<K, V>) -> (typeof(pairs), { [K]: V }),
 	clear: (self: MutHashMap<K, V>) -> (),
 	insert: (self: MutHashMap<K, V>, key: K, value: V) -> Option<V>,
 	drain: (self: MutHashMap<K, V>) -> { [K]: V },
@@ -81,7 +84,7 @@ end
 
 function HashMap:__len(): number
 	local count = 0
-	for _ in self do
+	for _ in pairs(self._map) do
 		count += 1
 	end
 	return count
@@ -150,6 +153,22 @@ function HashMap:asMut(): MutHashMap<any, any>
 
 	table.freeze(out)
 	return out
+end
+
+function MutHashMap:__tostring(): string
+	return `MutHashMap({Error.displayAsJson(self:drain())})`
+end
+
+function MutHashMap.__iter(self: MutHashMap<any, any>)
+	return pairs :: any, self._map
+end
+
+function MutHashMap:__len(): number
+	local count = 0
+	for _ in pairs(self._map) do
+		count += 1
+	end
+	return count
 end
 
 function MutHashMap:clear()
