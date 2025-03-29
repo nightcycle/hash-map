@@ -252,4 +252,10 @@ return {
 		table.freeze(self)
 		return self
 	end,
+	isHashMap = function(value: unknown?): boolean
+		if typeof(value) == "table" then
+			return getmetatable(value :: any) == HashMap
+		end
+		return false
+	end,
 }
