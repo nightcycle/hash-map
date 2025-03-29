@@ -30,6 +30,7 @@ type HashMapImpl<K, V> = {
 	isEmpty: (self: HashMap<K, V>) -> boolean,
 	isMut: (self: HashMap<K, V>) -> false,
 	asMut: (self: HashMap<K, V>) -> MutHashMap<K, V>,
+	[K]: never,
 }
 
 type MutHashMapImpl<K, V> = {
@@ -49,11 +50,13 @@ type MutHashMapImpl<K, V> = {
 	removeEntry: (self: MutHashMap<K, V>, key: K) -> Option<Entry<K, V>>,
 	retain: (self: MutHashMap<K, V>, predicate: (entry: Entry<K, V>) -> boolean) -> (),
 	freeze: (self: MutHashMap<K, V>) -> HashMap<K, V>,
+	[K]: never,
 }
 
 export type HashMap<K, V> = typeof(setmetatable(
 	{} :: {
 		_map: { [K]: V },
+		[K]: never,
 	},
 	{} :: HashMapImpl<K, V>
 ))
