@@ -258,4 +258,10 @@ return {
 		end
 		return false
 	end,
+	isMutHashMap = function(value: unknown?): boolean
+		if typeof(value) == "table" then
+			return getmetatable(value :: any) == MutHashMap
+		end
+		return false
+	end,
 }
