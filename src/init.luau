@@ -217,6 +217,20 @@ function MutHashMap:freeze(): HashMap<any, any>
 end
 
 return {
+	emptyMut = function<K, V>(): MutHashMap<K, V>
+		local self = setmetatable({
+			_map = {},
+		}, MutHashMap) :: any
+		table.freeze(self)
+		return self
+	end,
+	empty = function<K, V>(): HashMap<K, V>
+		local self = setmetatable({
+			_map = table.freeze({}),
+		}, HashMap)
+		table.freeze(self)
+		return self
+	end,
 	from = function<K, V>(initial: { [K]: V }): HashMap<K, V>
 		local map: { [K]: V } = if table.isfrozen(initial) then initial else table.clone(initial)
 		if not table.isfrozen(map) then
@@ -227,5 +241,12 @@ return {
 		}, HashMap)
 		table.freeze(self)
 		return self
-	end :: (<K, V>(initial: { [K]: V }?) -> HashMap<K, V>) & (<K, V>() -> HashMap<K, V>),
+	end,
+	fromMut = function<K, V>(initial: { [K]: V }): MutHashMap<K, V>
+		local self = setmetatable({
+			_map = table.clone(initial),
+		}, MutHashMap) :: any
+		table.freeze(self)
+		return self
+	end,
 }
