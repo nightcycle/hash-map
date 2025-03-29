@@ -20,7 +20,7 @@ type HashMapImpl<K, V> = {
 	__index: HashMapImpl<K, V>,
 	__tostring: (self: HashMap<K, V>) -> string,
 	__len: (self: HashMap<K, V>) -> number,
-	__iter: (self: HashMap<K, V>) -> (typeof(pairs), { [K]: V }),
+	__iter: (self: HashMap<K, V>) -> (typeof(next), { [K]: V }),
 	drain: (self: HashMap<K, V>) -> { [K]: V },
 	containsKey: (self: HashMap<K, V>, key: K) -> boolean,
 	get: (self: HashMap<K, V>, key: K) -> Option<V>,
@@ -36,7 +36,7 @@ type MutHashMapImpl<K, V> = {
 	__index: MutHashMapImpl<K, V>,
 	__tostring: (self: MutHashMap<K, V>) -> string,
 	__len: (self: MutHashMap<K, V>) -> number,
-	__iter: (self: MutHashMap<K, V>) -> (typeof(pairs), { [K]: V }),
+	__iter: (self: MutHashMap<K, V>) -> (typeof(next), { [K]: V }),
 	clear: (self: MutHashMap<K, V>) -> (),
 	insert: (self: MutHashMap<K, V>, key: K, value: V) -> Option<V>,
 	drain: (self: MutHashMap<K, V>) -> { [K]: V },
@@ -91,7 +91,7 @@ function HashMap:__len(): number
 end
 
 function HashMap.__iter(self: HashMap<any, any>)
-	return pairs :: any, self._map
+	return next :: any, self._map
 end
 
 function HashMap:drain(): { [any]: any }
@@ -160,7 +160,7 @@ function MutHashMap:__tostring(): string
 end
 
 function MutHashMap.__iter(self: MutHashMap<any, any>)
-	return pairs :: any, self._map
+	return next :: any, self._map
 end
 
 function MutHashMap:__len(): number
