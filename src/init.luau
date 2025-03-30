@@ -34,24 +34,24 @@ type HashMapImpl<K, V> = {
 
 type MutHashMapImpl<K, V> = {
 	__index: MutHashMapImpl<K, V>,
-	__tostring: (self: MutHashMap<K, V>) -> string,
-	__len: (self: MutHashMap<K, V>) -> number,
-	__iter: (self: MutHashMap<K, V>) -> (typeof(next), { [K]: V }),
-	clear: (self: MutHashMap<K, V>) -> (),
-	insert: (self: MutHashMap<K, V>, key: K, value: V) -> Option<V>,
-	drain: (self: MutHashMap<K, V>) -> { [K]: V },
+	__tostring: (self: any) -> string,
+	__len: (self: any) -> number,
+	__iter: (self: any) -> (typeof(next), { [K]: V }),
+	clear: (self: any) -> (),
+	insert: (self: any, key: K, value: V) -> Option<V>,
+	drain: (self: any) -> { [K]: V },
 	tryInsert: (
-		self: MutHashMap<K, V>,
+		self: any,
 		key: K,
 		value: V
 	) -> Result<V, Error<"OccupiedError", {
 		entry: Entry<K, V>,
 		value: V,
 	}>>,
-	remove: (self: MutHashMap<K, V>, key: K) -> Option<V>,
-	removeEntry: (self: MutHashMap<K, V>, key: K) -> Option<Entry<K, V>>,
-	retain: (self: MutHashMap<K, V>, predicate: (entry: Entry<K, V>) -> boolean) -> (),
-	freeze: (self: MutHashMap<K, V>) -> HashMap<K, V>,
+	remove: (self: any, key: K) -> Option<V>,
+	removeEntry: (self: any, key: K) -> Option<Entry<K, V>>,
+	retain: (self: any, predicate: (entry: Entry<K, V>) -> boolean) -> (),
+	freeze: (self: any) -> HashMap<K, V>,
 }
 
 export type HashMap<K, V> = typeof(setmetatable(
