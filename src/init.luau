@@ -18,18 +18,18 @@ type Entry<K, V> = {
 }
 type HashMapImpl<K, V> = {
 	__index: HashMapImpl<K, V>,
-	__tostring: (self: HashMap<K, V>) -> string,
-	__len: (self: HashMap<K, V>) -> number,
-	__iter: (self: HashMap<K, V>) -> (typeof(next), { [K]: V }),
-	drain: (self: HashMap<K, V>) -> { [K]: V },
-	containsKey: (self: HashMap<K, V>, key: K) -> boolean,
-	get: (self: HashMap<K, V>, key: K) -> Option<V>,
-	getKeyValue: (self: HashMap<K, V>, key: K) -> Option<Entry<K, V>>,
-	intoKeys: (self: HashMap<K, V>) -> Vec<K>,
-	intoValues: (self: HashMap<K, V>) -> Vec<V>,
-	isEmpty: (self: HashMap<K, V>) -> boolean,
-	isMut: (self: HashMap<K, V>) -> false,
-	asMut: (self: HashMap<K, V>) -> MutHashMap<K, V>,
+	__tostring: (self: any) -> string,
+	__len: (self: any) -> number,
+	__iter: (self: any) -> (typeof(next), { [K]: V }),
+	drain: (self: any) -> { [K]: V },
+	containsKey: (self: any, key: K) -> boolean,
+	get: (self: any, key: K) -> Option<V>,
+	getKeyValue: (self: any, key: K) -> Option<Entry<K, V>>,
+	intoKeys: (self: any) -> Vec<K>,
+	intoValues: (self: any) -> Vec<V>,
+	isEmpty: (self: any) -> boolean,
+	isMut: (self: any) -> false,
+	asMut: (self: any) -> MutHashMap<K, V>,
 }
 
 type MutHashMapImpl<K, V> = {
