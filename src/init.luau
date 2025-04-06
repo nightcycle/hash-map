@@ -1,10 +1,10 @@
 --!strict
 -- Services
 -- Packages
-local Result = require("@wally/Result")
-local Option = require("@wally/Option")
-local Error = require("@wally/Error")
-local Vec = require("@wally/Vec")
+local Result = require("@pkg/@nightcycle/result")
+local Option = require("@pkg/@nightcycle/option")
+local Error = require("@pkg/@nightcycle/error")
+local Vec = require("@pkg/@nightcycle/vec")
 -- Modules
 -- Types
 type Error<T, Body> = Error.Error<T, Body>
