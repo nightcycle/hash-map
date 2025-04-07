@@ -54,14 +54,15 @@ type MutHashMapImpl<K, V> = {
 	freeze: (self: any) -> HashMap<K, V>,
 }
 
-export type HashMap<K, V> = typeof(setmetatable(
-	{} :: {
-		_map: { [K]: V },
-	},
-	{} :: HashMapImpl<K, V>
-))
+export type HashMap<K, V> = HashMapImpl<K, V>
+-- typeof(setmetatable(
+-- 	{} :: {
+-- 		_map: { [K]: V },
+-- 	},
+-- 	{} :: HashMapImpl<K, V>
+-- ))
 
-export type MutHashMap<K, V> = typeof(setmetatable({} :: {}, {} :: MutHashMapImpl<K, V>)) & HashMap<K, V>
+export type MutHashMap<K, V> = MutHashMapImpl<K, V> & HashMap<K, V> --typeof(setmetatable({} :: {}, {} :: MutHashMapImpl<K, V>)) & HashMap<K, V>
 -- Constants
 -- Variables
 -- References
@@ -90,7 +91,7 @@ function HashMap:__len(): number
 	return count
 end
 
-function HashMap.__iter(self: HashMap<any, any>)
+function HashMap.__iter(self)
 	return next :: any, self._map
 end
 
@@ -159,7 +160,7 @@ function MutHashMap:__tostring(): string
 	return `MutHashMap({Error.displayAsJson(self:drain())})`
 end
 
-function MutHashMap.__iter(self: MutHashMap<any, any>)
+function MutHashMap.__iter(self)
 	return next :: any, self._map
 end
 
@@ -232,7 +233,7 @@ function MutHashMap:freeze(): HashMap<any, any>
 		_map = map,
 	}, HashMap)
 	table.freeze(out)
-	return out
+	return out :: any
 end
 
 return {
@@ -248,7 +249,7 @@ return {
 			_map = table.freeze({}),
 		}, HashMap)
 		table.freeze(self)
-		return self
+		return self :: any
 	end,
 	from = function<K, V>(initial: { [K]: V }): HashMap<K, V>
 		local map: { [K]: V } = if table.isfrozen(initial) then initial else table.clone(initial)
@@ -259,7 +260,7 @@ return {
 			_map = map,
 		}, HashMap)
 		table.freeze(self)
-		return self
+		return self :: any
 	end,
 	fromMut = function<K, V>(initial: { [K]: V }): MutHashMap<K, V>
 		local self = setmetatable({
