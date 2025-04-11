@@ -17,10 +17,12 @@ type Entry<K, V> = {
 	value: V,
 }
 type HashMapImpl<K, V> = {
-	__index: HashMapImpl<K, V>,
-	__tostring: (self: any) -> string,
-	__len: (self: any) -> number,
-	__iter: (self: any) -> (typeof(next), { [K]: V }),
+	-- __index: HashMapImpl<K, V>,
+	-- __tostring: (self: any) -> string,
+	-- __len: (self: any) -> number,
+	-- __iter: (self: any) -> (typeof(next), { [K]: V }),
+	display: (self: any) -> string,
+	len: (self: any) -> number,
 	drain: (self: any) -> { [K]: V },
 	containsKey: (self: any, key: K) -> boolean,
 	get: (self: any, key: K) -> Option<V>,
@@ -30,16 +32,29 @@ type HashMapImpl<K, V> = {
 	isEmpty: (self: any) -> boolean,
 	isMut: (self: any) -> false,
 	asMut: (self: any) -> MutHashMap<K, V>,
+	forEachValue: (self: any, callback: (value: V) -> ()) -> (),
+	forEachKey: (self: any, callback: (key: K) -> ()) -> (),
+	forEachPair: (self: any, callback: (key: K, value: V) -> ()) -> (),
+	matchPair: <T>(self: any, callback: (key: K, value: V) -> Option<T>) -> Option<T>,
 }
 
 type MutHashMapImpl<K, V> = {
-	__index: MutHashMapImpl<K, V>,
-	__tostring: (self: any) -> string,
-	__len: (self: any) -> number,
-	__iter: (self: any) -> (typeof(next), { [K]: V }),
+	-- __index: MutHashMapImpl<K, V>,
+	-- __tostring: (self: any) -> string,
+	-- __len: (self: any) -> number,
+	-- __iter: (self: any) -> (typeof(next), { [K]: V }),
+	display: (self: any) -> string,
+	len: (self: any) -> number,
+	drain: (self: any) -> { [K]: V },
+	containsKey: (self: any, key: K) -> boolean,
+	get: (self: any, key: K) -> Option<V>,
+	getKeyValue: (self: any, key: K) -> Option<Entry<K, V>>,
+	intoKeys: (self: any) -> Vec<K>,
+	intoValues: (self: any) -> Vec<V>,
+	isEmpty: (self: any) -> boolean,
+	isMut: (self: any) -> false,
 	clear: (self: any) -> (),
 	insert: (self: any, key: K, value: V) -> Option<V>,
-	drain: (self: any) -> { [K]: V },
 	tryInsert: (
 		self: any,
 		key: K,
@@ -52,6 +67,10 @@ type MutHashMapImpl<K, V> = {
 	removeEntry: (self: any, key: K) -> Option<Entry<K, V>>,
 	retain: (self: any, predicate: (entry: Entry<K, V>) -> boolean) -> (),
 	freeze: (self: any) -> HashMap<K, V>,
+	forEachValue: (self: any, callback: (value: V) -> ()) -> (),
+	forEachKey: (self: any, callback: (key: K) -> ()) -> (),
+	forEachPair: (self: any, callback: (key: K, value: V) -> ()) -> (),
+	matchPair: <T>(self: any, callback: (key: K, value: V) -> Option<T>) -> Option<T>,
 }
 
 export type HashMap<K, V> = HashMapImpl<K, V>
@@ -62,7 +81,7 @@ export type HashMap<K, V> = HashMapImpl<K, V>
 -- 	{} :: HashMapImpl<K, V>
 -- ))
 
-export type MutHashMap<K, V> = MutHashMapImpl<K, V> & HashMap<K, V> --typeof(setmetatable({} :: {}, {} :: MutHashMapImpl<K, V>)) & HashMap<K, V>
+export type MutHashMap<K, V> = MutHashMapImpl<K, V> --typeof(setmetatable({} :: {}, {} :: MutHashMapImpl<K, V>)) & HashMap<K, V>
 -- Constants
 -- Variables
 -- References
@@ -77,13 +96,10 @@ function newEntry<K, V>(key: K, value: V): Entry<K, V>
 end
 -- Class
 local HashMap = {} :: HashMapImpl<any, any>
-HashMap.__index = HashMap
+local DeprecatedHashMap: any = HashMap
+DeprecatedHashMap.__index = HashMap
 
-function HashMap:__tostring(): string
-	return `HashMap({Error.displayAsJson(self:drain())})`
-end
-
-function HashMap:__len(): number
+function HashMap:len(): number
 	local count = 0
 	for _ in pairs(self._map) do
 		count += 1
@@ -91,7 +107,19 @@ function HashMap:__len(): number
 	return count
 end
 
-function HashMap.__iter(self)
+function HashMap:display(): string
+	return `HashMap({Error.displayAsJson(self:drain())})`
+end
+
+DeprecatedHashMap.__tostring = function(self): string
+	return self:display()
+end
+
+DeprecatedHashMap.__len = function(self): number
+	return self:len()
+end
+
+DeprecatedHashMap.__iter = function(self)
 	return next :: any, self._map
 end
 
@@ -143,8 +171,37 @@ function HashMap:isMut(): false
 	return (not table.isfrozen(self._map)) :: false
 end
 
+function HashMap:forEachValue(callback: (value: any) -> ())
+	for key, value in pairs(self._map) do
+		callback(value)
+	end
+end
+
+function HashMap:forEachKey(callback: (key: any) -> ())
+	for key, value in pairs(self._map) do
+		callback(key)
+	end
+end
+
+function HashMap:forEachPair(callback: (key: any, value: any) -> ())
+	for key, value in pairs(self._map) do
+		callback(key, value)
+	end
+end
+
+function HashMap:matchPair<T>(callback: (key: any, value: any) -> Option<T>): Option<T>
+	for key, value in pairs(self._map) do
+		local opt = callback(key, value)
+		if opt:isSome() then
+			return opt
+		end
+	end
+	return Option.none()
+end
+
 local MutHashMap = {} :: MutHashMapImpl<any, any>
-MutHashMap.__index = MutHashMap
+local DeprecatedMutHashMap: any = MutHashMap
+DeprecatedMutHashMap.__index = MutHashMap
 setmetatable(MutHashMap, HashMap)
 
 function HashMap:asMut(): MutHashMap<any, any>
@@ -156,20 +213,20 @@ function HashMap:asMut(): MutHashMap<any, any>
 	return out
 end
 
-function MutHashMap:__tostring(): string
+function MutHashMap:display(): string
 	return `MutHashMap({Error.displayAsJson(self:drain())})`
 end
 
-function MutHashMap.__iter(self)
+function DeprecatedMutHashMap:__tostring(): string
+	return self:display()
+end
+
+function DeprecatedMutHashMap.__iter(self)
 	return next :: any, self._map
 end
 
-function MutHashMap:__len(): number
-	local count = 0
-	for _ in pairs(self._map) do
-		count += 1
-	end
-	return count
+function DeprecatedMutHashMap:__len(): number
+	return self:len()
 end
 
 function MutHashMap:clear()
